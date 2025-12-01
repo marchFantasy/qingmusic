@@ -3,10 +3,21 @@ import { Howl } from 'howler';
 class AudioEngine {
 	private howl: Howl | null = null;
 	private currentUrl: string | null = null;
+	private animationFrameId: number | null = null;
 
-	play(blob: Blob, volume: number, onEnd: () => void, onLoad: () => void) {
+	play(
+		blob: Blob,
+		volume: number,
+		onEnd: () => void,
+		onLoad: () => void,
+		onProgress: (progress: number) => void
+	) {
 		if (this.currentUrl) {
 			URL.revokeObjectURL(this.currentUrl);
+		}
+
+		if (this.animationFrameId) {
+			cancelAnimationFrame(this.animationFrameId);
 		}
 
 		// Stop previous instance if exists
@@ -25,11 +36,28 @@ class AudioEngine {
 			onload: onLoad,
 		});
 
+		const updateProgress = () => {
+			if (this.howl) {
+				onProgress(this.currentTime());
+				if (this.howl.playing()) {
+					this.animationFrameId = requestAnimationFrame(updateProgress);
+				}
+			}
+		};
+
+		this.howl.on('play', () => {
+			this.animationFrameId = requestAnimationFrame(updateProgress);
+		});
+
 		this.howl.play();
 	}
 
 	pause() {
 		this.howl?.pause();
+		if (this.animationFrameId) {
+			cancelAnimationFrame(this.animationFrameId);
+			this.animationFrameId = null;
+		}
 	}
 
 	resume() {
@@ -38,6 +66,10 @@ class AudioEngine {
 
 	stop() {
 		this.howl?.stop();
+		if (this.animationFrameId) {
+			cancelAnimationFrame(this.animationFrameId);
+			this.animationFrameId = null;
+		}
 	}
 
 	setVolume(volume: number) {
@@ -53,7 +85,11 @@ class AudioEngine {
 	}
 
 	currentTime(): number {
-		return (this.howl?.seek() as number) || 0;
+		const time = this.howl?.seek();
+		if (typeof time === 'number') {
+			return time;
+		}
+		return 0;
 	}
 
 	isPlaying(): boolean {

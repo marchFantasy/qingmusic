@@ -20,7 +20,7 @@ interface PlayerState {
 	setDuration: (duration: number) => void;
 	next: () => void;
 	prev: () => void;
-	setQueue: (queue: AudioFile[]) => void;
+	setQueue: (queue: AudioFile[], currentTrackId?: string) => void;
 	toggleShuffle: () => void;
 	toggleRepeat: () => void;
 }
@@ -36,17 +36,19 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 	repeatMode: 'none',
 
 	play: async (track) => {
-		const { currentTrack, volume, next } = get();
+		const { currentTrack, volume, play, next } = get();
 
 		if (track) {
 			// Play new track
+			set({ progress: 0, duration: 0 }); // Reset progress for new track
 			try {
 				const file = await fileSystem.getFile(track.handle);
 				audioEngine.play(
 					file,
 					volume,
 					() => next(), // onEnd: play next
-					() => set({ duration: audioEngine.duration() }) // onLoad
+					() => set({ duration: audioEngine.duration() }), // onLoad
+					(progress) => set({ progress }) // onProgress
 				);
 				set({ currentTrack: track, isPlaying: true });
 			} catch (error) {
@@ -78,16 +80,24 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 
 	setDuration: (duration) => set({ duration }),
 
-	setQueue: (queue) => set({ queue }),
+	setQueue: (queue, currentTrackId) => {
+		const track = queue.find((t) => t.id === currentTrackId);
+		set({ queue, currentTrack: track });
+	},
 
 	next: () => {
-		const { queue, currentTrack, repeatMode } = get();
+		const { queue, currentTrack, repeatMode, isShuffled, play } = get();
 		if (queue.length === 0) return;
 
 		if (repeatMode === 'one' && currentTrack) {
-			// Just restart current track (handled by engine usually, but here we just re-set)
-			// Actually, 'next' usually forces next track even in repeat one, unless it's auto-next.
-			// Let's assume this is user-triggered 'next'.
+			play(currentTrack); // Replay current track
+			return;
+		}
+
+		if (isShuffled) {
+			const randomIndex = Math.floor(Math.random() * queue.length);
+			play(queue[randomIndex]);
+			return;
 		}
 
 		const currentIndex = currentTrack
@@ -97,30 +107,35 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 
 		if (nextIndex >= queue.length) {
 			if (repeatMode === 'all') {
-				nextIndex = 0;
+				nextIndex = 0; // Loop back to start
 			} else {
-				set({ isPlaying: false }); // Stop at end
+				set({ isPlaying: false }); // Stop at end of queue
+				audioEngine.stop();
 				return;
 			}
 		}
 
-		set({ currentTrack: queue[nextIndex], isPlaying: true });
+		play(queue[nextIndex]);
 	},
 
 	prev: () => {
-		const { queue, currentTrack } = get();
-		if (queue.length === 0) return;
+		const { queue, currentTrack, play, progress } = get();
+		if (queue.length === 0 || !currentTrack) return;
 
-		const currentIndex = currentTrack
-			? queue.findIndex((t) => t.id === currentTrack.id)
-			: -1;
+		// If more than 3s into track, or it's the first track, restart it
+		if (progress > 3) {
+			play(currentTrack);
+			return;
+		}
+
+		const currentIndex = queue.findIndex((t) => t.id === currentTrack.id);
 		let prevIndex = currentIndex - 1;
 
 		if (prevIndex < 0) {
-			prevIndex = queue.length - 1; // Loop back or stop? Usually loop back or go to 0.
+			prevIndex = queue.length - 1; // Loop back to end
 		}
 
-		set({ currentTrack: queue[prevIndex], isPlaying: true });
+		play(queue[prevIndex]);
 	},
 
 	toggleShuffle: () => set((state) => ({ isShuffled: !state.isShuffled })),

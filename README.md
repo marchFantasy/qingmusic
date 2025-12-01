@@ -1,73 +1,57 @@
-# React + TypeScript + Vite
+# QingMusic - 清新优雅的本地音乐播放器
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+QingMusic 是一款使用现代 Web 技术构建的本地音乐播放器。它致力于提供一个界面清新、交互优雅、性能出色的桌面级音乐欣赏体验。用户可以直接选择本地音乐文件夹，应用会自动扫描并展示音乐库，无需上传，所有数据均保留在本地。
 
-Currently, two official plugins are available:
+## 主要功能
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **本地音乐库**: 无需上传，直接访问本地文件夹，快速扫描并建立音乐库。
+- **优雅的播放体验**: 包含播放、暂停、上一首、下一首、进度控制、音量调节等功能。
+- **播放列表**: 支持队列播放、随机播放、单曲循环和列表循环。
+- **专辑封面**: 自动读取并展示音乐文件中的专辑封面。
+- **纯粹与专注**: 简洁的界面设计，让用户专注于音乐本身。
 
-## React Compiler
+## 技术栈
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+本项目采用了一系列现代化的前端技术，以实现高性能、高可维护性和优秀的用户体验。
 
-## Expanding the ESLint configuration
+- **核心框架: React 18 + Vite**
+  - **理由**: 响应速度极快，生态最丰富，适合构建高交互应用。
+- **开发语言: TypeScript**
+  - **理由**: 保证代码健壮性，利于长期维护。
+- **UI 样式: Tailwind CSS + Radix UI**
+  - **理由**: Tailwind 提供了极致的样式定制能力，方便实现“清新优雅”的视觉效果；Radix 提供无障碍交互基础，不绑定样式。
+- **动画交互: Framer Motion**
+  - **理由**: 实现丝滑的页面切换、播放列表滚动等微交互，是提升“高级感”的关键。
+- **状态管理: Zustand**
+  - **理由**: 轻量级，比 Redux 更简洁，非常适合管理播放列表、当前播放状态。
+- **音频内核: Howler.js**
+  - **理由**: 处理音频播放、音量、进度控制等专业音频功能。
+- **本地能力: File System Access API**
+  - **理由**: 允许网页直接请求用户选择本地文件夹，并读取其中的音频文件（mp3, flac, wav 等）。
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## 快速开始
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+1. **克隆项目**
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+   ```bash
+   git clone https://github.com/marchFantasy/qingmusic.git
+   cd qingmusic
+   ```
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+2. **安装依赖**
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+   ```bash
+   npm install
+   ```
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+3. **运行开发服务器**
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+   ```bash
+   npm run dev
+   ```
+
+4. 在浏览器中打开 `http://localhost:5173` 访问应用。
+
+---
+
+_注意: 由于项目使用了 File System Access API，请在支持此特性的现代浏览器（如 Chrome, Edge）上运行。_

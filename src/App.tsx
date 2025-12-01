@@ -2,11 +2,9 @@ import { Layout } from './components/Layout';
 import { PlayerBar } from './components/PlayerBar';
 import { LibraryGrid } from './components/LibraryGrid';
 import { useLibraryStore } from './store/useLibraryStore';
-import { useFocusRevalidate } from './hooks/useFocusRevalidate';
 
 function App() {
 	const { rootHandle } = useLibraryStore();
-	useFocusRevalidate();
 
 	return (
 		<Layout bottomBar={<PlayerBar />}>
