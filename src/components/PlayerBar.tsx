@@ -10,6 +10,7 @@ import {
 	Shuffle,
 } from 'lucide-react';
 import { usePlayerStore } from '../store/usePlayerStore';
+import { useCoverArtStore } from '../store/useCoverArtStore';
 import { formatTime } from '../utils/formatTime';
 import { clsx } from 'clsx';
 
@@ -31,6 +32,7 @@ export function PlayerBar() {
 		isShuffled,
 		repeatMode,
 	} = usePlayerStore();
+	const { coverUrls } = useCoverArtStore();
 
 	const handlePlayPause = () => {
 		if (isPlaying) pause();
@@ -45,6 +47,10 @@ export function PlayerBar() {
 		setVolume(value[0]);
 	};
 
+	const customCoverUrl =
+		currentTrack?.metadata?.album && coverUrls[currentTrack.metadata.album];
+	const coverUrl = customCoverUrl || currentTrack?.metadata?.cover;
+
 	return (
 		<div className="flex items-center justify-between h-full px-8 w-full max-w-7xl mx-auto">
 			{/* Track Info */}
@@ -52,9 +58,9 @@ export function PlayerBar() {
 				{currentTrack ? (
 					<>
 						<div className="w-14 h-14 bg-white/10 rounded-md flex items-center justify-center overflow-hidden shadow-lg">
-							{currentTrack.metadata?.cover ? (
+							{coverUrl ? (
 								<img
-									src={currentTrack.metadata.cover}
+									src={coverUrl}
 									alt="Cover"
 									className="w-full h-full object-cover"
 								/>
