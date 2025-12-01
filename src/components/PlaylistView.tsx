@@ -2,14 +2,17 @@ import { useParams } from 'react-router-dom';
 import { usePlaylistStore } from '../store/usePlaylistStore';
 import { useLibraryStore } from '../store/useLibraryStore';
 import { usePlayerStore } from '../store/usePlayerStore';
+import { useCoverArtStore } from '../store/useCoverArtStore';
 import { Music, Pause, Play, Trash2 } from 'lucide-react';
 import { formatTime } from '../utils/formatTime';
+import { motion } from 'framer-motion';
 
 export function PlaylistView() {
 	const { id } = useParams<{ id: string }>();
 	const { playlists, removeTrackFromPlaylist } = usePlaylistStore();
 	const { files } = useLibraryStore();
-	const { currentTrack, isPlaying, play } = usePlayerStore();
+	const { currentTrack, isPlaying, play, pause } = usePlayerStore();
+	const { coverUrls } = useCoverArtStore();
 
 	const playlist = id ? playlists[id] : undefined;
 
@@ -26,17 +29,43 @@ export function PlaylistView() {
 		.filter((t): t is NonNullable<typeof t> => t !== undefined);
 
 	const handlePlayTrack = (track: (typeof tracks)[0], index: number) => {
-		const playlistQueue = tracks.slice(index);
-		usePlayerStore.getState().setQueue(playlistQueue, track.id);
-		play(track);
+		const isCurrent = currentTrack?.id === track.id;
+		if (isCurrent && isPlaying) {
+			pause();
+		} else if (isCurrent && !isPlaying) {
+			play();
+		} else {
+			const playlistQueue = tracks.slice(index);
+			usePlayerStore.getState().setQueue(playlistQueue, track.id);
+			play(track);
+		}
+	};
+
+	const containerVariants = {
+		hidden: { opacity: 0 },
+		visible: {
+			opacity: 1,
+			transition: {
+				staggerChildren: 0.05,
+			},
+		},
+	};
+
+	const itemVariants = {
+		hidden: { y: 20, opacity: 0 },
+		visible: { y: 0, opacity: 1 },
 	};
 
 	return (
 		<div>
-			<header className="mb-8">
+			<motion.header
+				initial={{ opacity: 0, y: -20 }}
+				animate={{ opacity: 1, y: 0 }}
+				className="mb-8"
+			>
 				<h1 className="text-4xl font-bold text-white mb-2">{playlist.name}</h1>
 				<p className="text-white/60">{tracks.length} songs</p>
-			</header>
+			</motion.header>
 
 			<table className="w-full text-left text-sm">
 				<thead className="text-white/60 border-b border-white/10">
@@ -48,22 +77,64 @@ export function PlaylistView() {
 						<th className="p-3 w-10"></th>
 					</tr>
 				</thead>
-				<tbody>
+				<motion.tbody
+					variants={containerVariants}
+					initial="hidden"
+					animate="visible"
+				>
 					{tracks.map((track, index) => {
 						const isCurrent = currentTrack?.id === track.id;
+
+						const albumName = track.metadata?.album;
+						const coverUrl =
+							(albumName ? coverUrls[albumName] : undefined) ||
+							track.metadata?.cover;
+
 						return (
-							<tr
+							<motion.tr
 								key={track.id}
-								className="group hover:bg-white/5 rounded-lg cursor-pointer"
+								variants={itemVariants}
+								whileHover={{
+									backgroundColor: 'rgba(255, 255, 255, 0.05)',
+									scale: 1.02,
+								}}
+								className="group rounded-lg cursor-pointer"
 								onClick={() => handlePlayTrack(track, index)}
 							>
-								<td className="p-3 text-white/60">{index + 1}</td>
+								<td className="p-3 w-10">
+									<div className="relative w-4 h-4 flex items-center justify-center">
+										{isCurrent ? (
+											isPlaying ? (
+												<div className="w-3 h-3 flex items-end gap-0.5 text-primary">
+													<span className="w-1 h-full bg-current animate-[wave_1s_ease-in-out_-0.4s_infinite]" />
+													<span className="w-1 h-2/3 bg-current animate-[wave_1s_ease-in-out_-0.2s_infinite]" />
+													<span className="w-1 h-full bg-current animate-[wave_1s_ease-in-out_0s_infinite]" />
+												</div>
+											) : (
+												<Pause
+													size={16}
+													className="text-primary cursor-pointer"
+												/>
+											)
+										) : (
+											<>
+												<span className="text-white/60 group-hover:opacity-0 transition-opacity">
+													{index + 1}
+												</span>
+												<Play
+													size={16}
+													className="absolute text-white/60 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+												/>
+											</>
+										)}
+									</div>
+								</td>
 								<td className="p-3 flex items-center gap-4">
 									<div className="w-12 h-12 rounded-md bg-white/10 shrink-0 overflow-hidden">
-										{track.metadata?.cover ? (
+										{coverUrl ? (
 											<img
-												src={track.metadata.cover}
-												alt={track.metadata.title || track.name}
+												src={coverUrl}
+												alt={track.metadata?.title || track.name}
 												className="w-full h-full object-cover"
 											/>
 										) : (
@@ -106,10 +177,10 @@ export function PlaylistView() {
 										<Trash2 size={16} />
 									</button>
 								</td>
-							</tr>
+							</motion.tr>
 						);
-					})}
-				</tbody>
+					})}{' '}
+				</motion.tbody>
 			</table>
 		</div>
 	);

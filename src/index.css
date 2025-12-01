@@ -62,3 +62,13 @@ body {
 		@apply bg-black/20 backdrop-blur-md border border-white/5;
 	}
 }
+
+@keyframes wave {
+	0%,
+	100% {
+		transform: scaleY(0.5);
+	}
+	50% {
+		transform: scaleY(1);
+	}
+}

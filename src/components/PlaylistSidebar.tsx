@@ -26,7 +26,7 @@ export function PlaylistSidebar() {
 					}
 				>
 					<Library size={20} />
-					Your Library
+					Qing Music
 				</NavLink>
 			</nav>
 
@@ -51,9 +51,7 @@ export function PlaylistSidebar() {
 							to={`/playlist/${playlist.id}`}
 							className={({ isActive }) =>
 								`px-4 py-2 rounded-md text-sm transition truncate ${
-									isActive
-										? 'bg-white/10 text-white'
-										: 'text-white/80 hover:bg-white/5'
+									isActive ? 'bg-white/10 text-white' : 'text-white/80 hover:bg-white/5'
 								}`
 							}
 						>
@@ -61,9 +59,7 @@ export function PlaylistSidebar() {
 						</NavLink>
 					))
 				) : (
-					<p className="text-sm text-white/40 px-4 py-2">
-						No playlists yet.
-					</p>
+					<p className="text-sm text-white/40 px-4 py-2">No playlists yet.</p>
 				)}
 			</nav>
 		</div>

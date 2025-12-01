@@ -44,7 +44,7 @@ export class FileSystemService {
 						let coverUrl: string | undefined = undefined;
 						if (common.picture?.length) {
 							const picture = common.picture[0];
-							const blob = new Blob([picture.data], { type: picture.format });
+							const blob = new Blob([new Uint8Array(picture.data)], { type: picture.format });
 							coverUrl = URL.createObjectURL(blob);
 						}
 

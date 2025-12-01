@@ -21,7 +21,7 @@ function App() {
 					<header className="flex items-center justify-between mb-8 sticky top-0 z-10 py-4 glass-panel px-6 rounded-2xl mt-2">
 						<div className="flex items-center gap-6">
 							<h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/60">
-								Library
+								Search
 							</h1>
 							<div className="relative">
 								<Search

@@ -28,8 +28,20 @@ export const useLibraryStore = create<LibraryState>((set, get) => ({
 		try {
 			const handle = await directoryHandleService.getHandle();
 			if (handle) {
-				set({ rootHandle: handle });
-				await get().scanLibrary();
+				// Check for permission first
+				const permission = await handle.queryPermission({ mode: 'read' });
+				if (permission === 'granted') {
+					set({ rootHandle: handle });
+					await get().scanLibrary();
+				} else if (permission === 'prompt') {
+					// Request permission
+					const newPermission = await handle.requestPermission({ mode: 'read' });
+					if (newPermission === 'granted') {
+						set({ rootHandle: handle });
+						await get().scanLibrary();
+					}
+				}
+				// If permission is 'denied', do nothing. User will have to re-select.
 			}
 		} catch (error) {
 			console.error('Failed to load directory handle from storage', error);

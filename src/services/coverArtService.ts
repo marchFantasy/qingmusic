@@ -9,15 +9,30 @@ interface MyDB extends DBSchema {
 		key: string; // album name
 		value: Blob; // image blob
 	};
+	'directory-handles': {
+		key: string;
+		value: FileSystemDirectoryHandle;
+	};
 }
 
 class CoverArtService {
 	private dbPromise: Promise<IDBPDatabase<MyDB>>;
 
 	constructor() {
-		this.dbPromise = openDB<MyDB>(DB_NAME, 1, {
-			upgrade(db) {
-				db.createObjectStore(STORE_NAME);
+		this.dbPromise = openDB<MyDB>(DB_NAME, 2, {
+			upgrade(db, oldVersion) {
+				// 版本 1: 创建 album-covers store
+				if (oldVersion < 1) {
+					if (!db.objectStoreNames.contains(STORE_NAME)) {
+						db.createObjectStore(STORE_NAME);
+					}
+				}
+				// 版本 2: 创建 directory-handles store
+				if (oldVersion < 2) {
+					if (!db.objectStoreNames.contains('directory-handles')) {
+						db.createObjectStore('directory-handles');
+					}
+				}
 			},
 		});
 	}

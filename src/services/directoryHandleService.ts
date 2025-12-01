@@ -11,6 +11,10 @@ interface MyDB extends DBSchema {
 		key: string;
 		value: DirectoryHandle;
 	};
+	'album-covers': {
+		key: string;
+		value: Blob;
+	};
 }
 
 class DirectoryHandleService {
@@ -19,13 +23,18 @@ class DirectoryHandleService {
 	constructor() {
 		this.dbPromise = openDB<MyDB>(DB_NAME, 2, {
 			upgrade(db, oldVersion) {
+				// 版本 1: 创建 album-covers store
+				if (oldVersion < 1) {
+					if (!db.objectStoreNames.contains('album-covers')) {
+						db.createObjectStore('album-covers');
+					}
+				}
+				// 版本 2: 创建 directory-handles store
 				if (oldVersion < 2) {
 					if (!db.objectStoreNames.contains(STORE_NAME)) {
 						db.createObjectStore(STORE_NAME);
 					}
 				}
-				// Note: We are using the same DB as coverArtService,
-				// so versioning needs to be managed carefully.
 			},
 		});
 	}

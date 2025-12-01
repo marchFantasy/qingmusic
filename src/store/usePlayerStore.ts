@@ -36,7 +36,7 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 	repeatMode: 'none',
 
 	play: async (track) => {
-		const { currentTrack, volume, play, next } = get();
+		const { currentTrack, volume, next } = get();
 
 		if (track) {
 			// Play new track
@@ -86,17 +86,17 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 	},
 
 	next: () => {
-		const { queue, currentTrack, repeatMode, isShuffled, play } = get();
+		const { queue, currentTrack, repeatMode, isShuffled } = get();
 		if (queue.length === 0) return;
 
 		if (repeatMode === 'one' && currentTrack) {
-			play(currentTrack); // Replay current track
+			get().play(currentTrack); // Replay current track
 			return;
 		}
 
 		if (isShuffled) {
 			const randomIndex = Math.floor(Math.random() * queue.length);
-			play(queue[randomIndex]);
+			get().play(queue[randomIndex]);
 			return;
 		}
 
@@ -115,16 +115,16 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 			}
 		}
 
-		play(queue[nextIndex]);
+		get().play(queue[nextIndex]);
 	},
 
 	prev: () => {
-		const { queue, currentTrack, play, progress } = get();
+		const { queue, currentTrack, progress } = get();
 		if (queue.length === 0 || !currentTrack) return;
 
 		// If more than 3s into track, or it's the first track, restart it
 		if (progress > 3) {
-			play(currentTrack);
+			get().play(currentTrack);
 			return;
 		}
 
@@ -135,7 +135,7 @@ export const usePlayerStore = create<PlayerState>((set, get) => ({
 			prevIndex = queue.length - 1; // Loop back to end
 		}
 
-		play(queue[prevIndex]);
+		get().play(queue[prevIndex]);
 	},
 
 	toggleShuffle: () => set((state) => ({ isShuffled: !state.isShuffled })),
