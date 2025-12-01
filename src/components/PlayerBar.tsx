@@ -13,6 +13,7 @@ import { usePlayerStore } from '../store/usePlayerStore';
 import { useCoverArtStore } from '../store/useCoverArtStore';
 import { formatTime } from '../utils/formatTime';
 import { clsx } from 'clsx';
+import { useRef, useState } from 'react';
 
 export function PlayerBar() {
 	const {
@@ -34,13 +35,43 @@ export function PlayerBar() {
 	} = usePlayerStore();
 	const { coverUrls } = useCoverArtStore();
 
+	// 本地状态用于拖动时的临时进度
+	const [isDragging, setIsDragging] = useState(false);
+	const [tempProgress, setTempProgress] = useState(0);
+	const seekTimeoutRef = useRef<number | null>(null);
+
+	// 显示的进度：拖动时显示临时进度，否则显示实际进度
+	const displayProgress = isDragging ? tempProgress : progress;
+
 	const handlePlayPause = () => {
 		if (isPlaying) pause();
 		else play();
 	};
 
 	const handleSeek = (value: number[]) => {
+		const newProgress = value[0];
+		setTempProgress(newProgress);
+		setIsDragging(true);
+
+		// 清除之前的定时器
+		if (seekTimeoutRef.current !== null) {
+			window.clearTimeout(seekTimeoutRef.current);
+		}
+
+		// 延迟执行实际的 seek 操作（防抖）
+		seekTimeoutRef.current = window.setTimeout(() => {
+			setProgress(newProgress);
+			setIsDragging(false);
+		}, 100); // 100ms 防抖
+	};
+
+	const handleSeekCommit = (value: number[]) => {
+		// 用户释放滑块时，立即执行 seek
+		if (seekTimeoutRef.current !== null) {
+			window.clearTimeout(seekTimeoutRef.current);
+		}
 		setProgress(value[0]);
+		setIsDragging(false);
 	};
 
 	const handleVolumeChange = (value: number[]) => {
@@ -131,20 +162,21 @@ export function PlayerBar() {
 				</div>
 
 				<div className="flex items-center w-full gap-3 text-xs text-white/60 font-mono">
-					<span className="w-10 text-right">{formatTime(progress)}</span>
+					<span className="w-10 text-right">{formatTime(displayProgress)}</span>
 					<Slider.Root
 						className="relative flex items-center select-none touch-none w-full h-5 cursor-pointer group"
-						value={[progress]}
+						value={[displayProgress]}
 						max={duration || 100}
 						step={1}
 						onValueChange={handleSeek}
+						onValueCommit={handleSeekCommit}
 					>
 						<Slider.Track className="bg-white/10 relative grow rounded-full h-[4px] overflow-hidden group-hover:h-[6px] transition-all">
 							<Slider.Range className="absolute bg-white h-full" />
 						</Slider.Track>
 						<Slider.Thumb
 							className="block w-3 h-3 bg-white rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity focus:outline-none"
-							aria-label="Volume"
+							aria-label="Progress"
 						/>
 					</Slider.Root>
 					<span className="w-10">{formatTime(duration)}</span>

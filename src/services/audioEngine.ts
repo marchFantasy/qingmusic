@@ -4,6 +4,7 @@ class AudioEngine {
 	private howl: Howl | null = null;
 	private currentUrl: string | null = null;
 	private animationFrameId: number | null = null;
+	private onProgressCallback: ((progress: number) => void) | null = null;
 
 	play(
 		blob: Blob,
@@ -26,6 +27,7 @@ class AudioEngine {
 		}
 
 		this.currentUrl = URL.createObjectURL(blob);
+		this.onProgressCallback = onProgress;
 
 		this.howl = new Howl({
 			src: [this.currentUrl],
@@ -37,8 +39,8 @@ class AudioEngine {
 		});
 
 		const updateProgress = () => {
-			if (this.howl) {
-				onProgress(this.currentTime());
+			if (this.howl && this.onProgressCallback) {
+				this.onProgressCallback(this.currentTime());
 				if (this.howl.playing()) {
 					this.animationFrameId = requestAnimationFrame(updateProgress);
 				}
@@ -46,7 +48,17 @@ class AudioEngine {
 		};
 
 		this.howl.on('play', () => {
+			if (this.animationFrameId) {
+				cancelAnimationFrame(this.animationFrameId);
+			}
 			this.animationFrameId = requestAnimationFrame(updateProgress);
+		});
+
+		this.howl.on('pause', () => {
+			if (this.animationFrameId) {
+				cancelAnimationFrame(this.animationFrameId);
+				this.animationFrameId = null;
+			}
 		});
 
 		this.howl.play();
@@ -77,7 +89,13 @@ class AudioEngine {
 	}
 
 	seek(position: number) {
+		const wasPlaying = this.howl?.playing() || false;
 		this.howl?.seek(position);
+
+		// 如果之前在播放，确保 seek 后继续播放，并触发 'play' 事件来重启进度更新
+		if (wasPlaying) {
+			this.howl?.play();
+		}
 	}
 
 	duration(): number {

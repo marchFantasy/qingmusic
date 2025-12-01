@@ -14,7 +14,7 @@ import {
 	ImageUp,
 } from 'lucide-react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { formatTime } from '../utils/formatTime';
 import type { AudioFile } from '../types';
 
@@ -63,7 +63,7 @@ export function LibraryGrid() {
 			setCover(audioFile.metadata.album, file);
 		}
 		// Reset file input
-		if(e.target) e.target.value = '';
+		if (e.target) e.target.value = '';
 	};
 
 	const filteredFiles = useMemo(() => {
@@ -96,7 +96,6 @@ export function LibraryGrid() {
 			loadCover(albumName);
 		});
 	}, [filteredFiles, loadCover]);
-
 
 	if (!rootHandle) {
 		return (
@@ -155,147 +154,153 @@ export function LibraryGrid() {
 				accept="image/*"
 			/>
 			<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 pb-20">
-				{filteredFiles.map((file, index) => {
-					const isCurrent = currentTrack?.id === file.id;
-					const customCoverUrl = file.metadata?.album
-						? coverUrls[file.metadata.album]
-						: undefined;
-					const coverUrl = customCoverUrl || file.metadata?.cover;
+				<AnimatePresence mode="popLayout">
+					{filteredFiles.map((file, index) => {
+						const isCurrent = currentTrack?.id === file.id;
+						const customCoverUrl = file.metadata?.album
+							? coverUrls[file.metadata.album]
+							: undefined;
+						const coverUrl = customCoverUrl || file.metadata?.cover;
 
-					const handlePlay = () => {
-						if (isCurrent && isPlaying) {
-							pause();
-						} else if (isCurrent && !isPlaying) {
-							play();
-						} else {
-							// Important: set the queue to the *full* library for continuous play
-							usePlayerStore.getState().setQueue(files, file.id);
-							play(file);
-						}
-					};
+						const handlePlay = () => {
+							if (isCurrent && isPlaying) {
+								pause();
+							} else if (isCurrent && !isPlaying) {
+								play();
+							} else {
+								// Important: set the queue to the *full* library for continuous play
+								usePlayerStore.getState().setQueue(files, file.id);
+								play(file);
+							}
+						};
 
-					return (
-						<motion.div
-							key={file.id}
-							initial={{ opacity: 0, scale: 0.9 }}
-							animate={{ opacity: 1, scale: 1 }}
-							transition={{ delay: index * 0.02 }}
-							className="group relative aspect-square rounded-2xl overflow-hidden bg-white/5 hover:bg-white/10 transition border border-transparent hover:border-white/10"
-						>
-							<div onClick={handlePlay} className="absolute inset-0 cursor-pointer">
-								{coverUrl ? (
-									<img
-										src={coverUrl}
-										alt={file.metadata?.title || file.name}
-										className="w-full h-full object-cover"
-									/>
-								) : (
-									<div className="absolute inset-0 flex items-center justify-center text-white/10 group-hover:text-white/20 transition">
-										<Music size={64} />
-									</div>
-								)}
+						return (
+							<motion.div
+								key={file.id}
+								layout
+								initial={{ opacity: 0, scale: 0.9 }}
+								animate={{ opacity: 1, scale: 1 }}
+								exit={{ opacity: 0, scale: 0.9 }}
+								transition={{
+									delay: index * 0.02,
+									duration: 0.3,
+									ease: 'easeOut',
+								}}
+								className="group relative aspect-square rounded-2xl overflow-hidden bg-white/5 hover:bg-white/10 transition border border-transparent hover:border-white/10"
+							>
+								<div onClick={handlePlay} className="absolute inset-0 cursor-pointer">
+									{coverUrl ? (
+										<img
+											src={coverUrl}
+											alt={file.metadata?.title || file.name}
+											className="w-full h-full object-cover"
+										/>
+									) : (
+										<div className="absolute inset-0 flex items-center justify-center text-white/10 group-hover:text-white/20 transition">
+											<Music size={64} />
+										</div>
+									)}
 
-								{/* Overlay */}
-								<div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition" />
+									{/* Overlay */}
+									<div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition" />
 
-								{/* Play Button Overlay */}
-								<div
-									className={`absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition ${
-										isCurrent && isPlaying ? 'opacity-100' : ''
-									}`}
-								>
-									<div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg text-black transform scale-90 group-hover:scale-100 transition">
-										{isCurrent && isPlaying ? (
-											<Pause size={20} fill="currentColor" />
-										) : (
-											<Play size={20} fill="currentColor" className="ml-1" />
-										)}
-									</div>
-								</div>
-
-								{/* Info */}
-								<div className="absolute bottom-0 left-0 right-0 p-4">
-									<h3
-										className={`font-semibold truncate ${
-											isCurrent ? 'text-primary' : 'text-white'
+									{/* Play Button Overlay */}
+									<div
+										className={`absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition ${
+											isCurrent && isPlaying ? 'opacity-100' : ''
 										}`}
 									>
-										{file.metadata?.title || file.name}
-									</h3>
-									<p className="text-xs text-white/60 truncate">
-										{file.metadata?.artist || 'Unknown Artist'}
-									</p>
+										<div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg text-black transform scale-90 group-hover:scale-100 transition">
+											{isCurrent && isPlaying ? (
+												<Pause size={20} fill="currentColor" />
+											) : (
+												<Play size={20} fill="currentColor" className="ml-1" />
+											)}
+										</div>
+									</div>
+
+									{/* Info */}
+									<div className="absolute bottom-0 left-0 right-0 p-4">
+										<h3
+											className={`font-semibold truncate ${
+												isCurrent ? 'text-primary' : 'text-white'
+											}`}
+										>
+											{file.metadata?.title || file.name}
+										</h3>
+										<p className="text-xs text-white/60 truncate">
+											{file.metadata?.artist || 'Unknown Artist'}
+										</p>
+									</div>
+
+									{/* Duration */}
+									{file.metadata?.duration && (
+										<div className="absolute top-2 right-2 bg-black/50 text-white text-[10px] px-2 py-1 rounded-full font-mono">
+											{formatTime(file.metadata.duration)}
+										</div>
+									)}
 								</div>
 
-								{/* Duration */}
-								{file.metadata?.duration && (
-									<div className="absolute top-2 right-2 bg-black/50 text-white text-[10px] px-2 py-1 rounded-full font-mono">
-										{formatTime(file.metadata.duration)}
-									</div>
-								)}
-							</div>
-
-							{/* More Options Menu */}
-							<DropdownMenu.Root>
-								<DropdownMenu.Trigger asChild>
-									<button
-										onClick={(e) => e.stopPropagation()}
-										className="absolute top-2 left-2 p-1.5 rounded-full bg-black/40 text-white/70 hover:bg-black/60 hover:text-white transition opacity-0 group-hover:opacity-100"
-									>
-										<MoreHorizontal size={16} />
-									</button>
-								</DropdownMenu.Trigger>
-								<DropdownMenu.Portal>
-									<DropdownMenu.Content
-										align="start"
-										sideOffset={5}
-										className="bg-neutral-800/80 backdrop-blur-xl border border-white/10 rounded-lg shadow-2xl text-sm text-white/90 py-1 w-48"
-										onClick={(e) => e.stopPropagation()}
-									>
-										<DropdownMenu.Sub>
-											<DropdownMenu.SubTrigger className="px-3 py-2 flex justify-between items-center cursor-pointer hover:bg-white/10">
-												Add to playlist
-											</DropdownMenu.SubTrigger>
-											<DropdownMenu.Portal>
-												<DropdownMenu.SubContent
-													sideOffset={5}
-													className="bg-neutral-800/80 backdrop-blur-xl border border-white/10 rounded-lg shadow-2xl text-sm text-white/90 py-1 w-48"
-												>
-													{playlistArray.map((playlist) => (
-														<DropdownMenu.Item
-															key={playlist.id}
-															className="px-3 py-2 cursor-pointer hover:bg-white/10"
-															onSelect={() =>
-																addTrackToPlaylist(playlist.id, file.id)
-															}
-														>
-															{playlist.name}
-														</DropdownMenu.Item>
-													))}
-													<DropdownMenu.Separator className="h-px bg-white/10 my-1" />
-													<DropdownMenu.Item
-														className="px-3 py-2 flex items-center gap-2 cursor-pointer hover:bg-white/10"
-														onSelect={handleCreatePlaylist}
-													>
-														<Plus size={16} /> Create new playlist
-													</DropdownMenu.Item>
-												</DropdownMenu.SubContent>
-											</DropdownMenu.Portal>
-										</DropdownMenu.Sub>
-										<DropdownMenu.Separator className="h-px bg-white/10 my-1" />
-										<DropdownMenu.Item
-											className="px-3 py-2 flex items-center gap-2 cursor-pointer hover:bg-white/10"
-											onSelect={() => handleSetCover(file)}
-											disabled={!file.metadata?.album}
+								{/* More Options Menu */}
+								<DropdownMenu.Root>
+									<DropdownMenu.Trigger asChild>
+										<button
+											onClick={(e) => e.stopPropagation()}
+											className="absolute top-2 left-2 p-1.5 rounded-full bg-black/40 text-white/70 hover:bg-black/60 hover:text-white transition opacity-0 group-hover:opacity-100"
 										>
-											<ImageUp size={16} /> Set custom cover
-										</DropdownMenu.Item>
-									</DropdownMenu.Content>
-								</DropdownMenu.Portal>
-							</DropdownMenu.Root>
-						</motion.div>
-					);
-				})}
+											<MoreHorizontal size={16} />
+										</button>
+									</DropdownMenu.Trigger>
+									<DropdownMenu.Portal>
+										<DropdownMenu.Content
+											align="start"
+											sideOffset={5}
+											className="bg-neutral-800/80 backdrop-blur-xl border border-white/10 rounded-lg shadow-2xl text-sm text-white/90 py-1 w-48"
+											onClick={(e) => e.stopPropagation()}
+										>
+											<DropdownMenu.Sub>
+												<DropdownMenu.SubTrigger className="px-3 py-2 flex justify-between items-center cursor-pointer hover:bg-white/10">
+													Add to playlist
+												</DropdownMenu.SubTrigger>
+												<DropdownMenu.Portal>
+													<DropdownMenu.SubContent
+														sideOffset={5}
+														className="bg-neutral-800/80 backdrop-blur-xl border border-white/10 rounded-lg shadow-2xl text-sm text-white/90 py-1 w-48"
+													>
+														{playlistArray.map((playlist) => (
+															<DropdownMenu.Item
+																key={playlist.id}
+																className="px-3 py-2 cursor-pointer hover:bg-white/10"
+																onSelect={() => addTrackToPlaylist(playlist.id, file.id)}
+															>
+																{playlist.name}
+															</DropdownMenu.Item>
+														))}
+														<DropdownMenu.Separator className="h-px bg-white/10 my-1" />
+														<DropdownMenu.Item
+															className="px-3 py-2 flex items-center gap-2 cursor-pointer hover:bg-white/10"
+															onSelect={handleCreatePlaylist}
+														>
+															<Plus size={16} /> Create new playlist
+														</DropdownMenu.Item>
+													</DropdownMenu.SubContent>
+												</DropdownMenu.Portal>
+											</DropdownMenu.Sub>
+											<DropdownMenu.Separator className="h-px bg-white/10 my-1" />
+											<DropdownMenu.Item
+												className="px-3 py-2 flex items-center gap-2 cursor-pointer hover:bg-white/10"
+												onSelect={() => handleSetCover(file)}
+												disabled={!file.metadata?.album}
+											>
+												<ImageUp size={16} /> Set custom cover
+											</DropdownMenu.Item>
+										</DropdownMenu.Content>
+									</DropdownMenu.Portal>
+								</DropdownMenu.Root>
+							</motion.div>
+						);
+					})}
+				</AnimatePresence>
 			</div>
 		</>
 	);
