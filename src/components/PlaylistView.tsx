@@ -78,6 +78,7 @@ export function PlaylistView() {
 					</tr>
 				</thead>
 				<motion.tbody
+					key={`playlist-${id}`}
 					variants={containerVariants}
 					initial="hidden"
 					animate="visible"
@@ -87,8 +88,7 @@ export function PlaylistView() {
 
 						const albumName = track.metadata?.album;
 						const coverUrl =
-							(albumName ? coverUrls[albumName] : undefined) ||
-							track.metadata?.cover;
+							(albumName ? coverUrls[albumName] : undefined) || track.metadata?.cover;
 
 						return (
 							<motion.tr
@@ -111,10 +111,7 @@ export function PlaylistView() {
 													<span className="w-1 h-full bg-current animate-[wave_1s_ease-in-out_0s_infinite]" />
 												</div>
 											) : (
-												<Pause
-													size={16}
-													className="text-primary cursor-pointer"
-												/>
+												<Pause size={16} className="text-primary cursor-pointer" />
 											)
 										) : (
 											<>
@@ -179,7 +176,7 @@ export function PlaylistView() {
 								</td>
 							</motion.tr>
 						);
-					})}{' '}
+					})}
 				</motion.tbody>
 			</table>
 		</div>
