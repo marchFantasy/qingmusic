@@ -1,0 +1,174 @@
+import * as Slider from '@radix-ui/react-slider';
+import {
+	Play,
+	Pause,
+	SkipBack,
+	SkipForward,
+	Volume2,
+	VolumeX,
+	Repeat,
+	Shuffle,
+} from 'lucide-react';
+import { usePlayerStore } from '../store/usePlayerStore';
+import { formatTime } from '../utils/formatTime';
+import { clsx } from 'clsx';
+
+export function PlayerBar() {
+	const {
+		isPlaying,
+		currentTrack,
+		volume,
+		progress,
+		duration,
+		play,
+		pause,
+		next,
+		prev,
+		setVolume,
+		setProgress,
+		toggleShuffle,
+		toggleRepeat,
+		isShuffled,
+		repeatMode,
+	} = usePlayerStore();
+
+	const handlePlayPause = () => {
+		if (isPlaying) pause();
+		else play();
+	};
+
+	const handleSeek = (value: number[]) => {
+		setProgress(value[0]);
+	};
+
+	const handleVolumeChange = (value: number[]) => {
+		setVolume(value[0]);
+	};
+
+	return (
+		<div className="flex items-center justify-between h-full px-8 w-full max-w-7xl mx-auto">
+			{/* Track Info */}
+			<div className="flex items-center w-1/4 min-w-[200px] gap-4">
+				{currentTrack ? (
+					<>
+						<div className="w-14 h-14 bg-white/10 rounded-md flex items-center justify-center overflow-hidden shadow-lg">
+							{currentTrack.metadata?.cover ? (
+								<img
+									src={currentTrack.metadata.cover}
+									alt="Cover"
+									className="w-full h-full object-cover"
+								/>
+							) : (
+								<div className="text-2xl">🎵</div>
+							)}
+						</div>
+						<div className="flex flex-col truncate">
+							<span className="font-medium text-white truncate">
+								{currentTrack.metadata?.title || currentTrack.name}
+							</span>
+							<span className="text-sm text-white/60 truncate">
+								{currentTrack.metadata?.artist || 'Unknown Artist'}
+							</span>
+						</div>
+					</>
+				) : (
+					<div className="text-white/40 text-sm">No track selected</div>
+				)}
+			</div>
+
+			{/* Controls & Progress */}
+			<div className="flex flex-col items-center flex-1 max-w-2xl px-4 gap-2">
+				<div className="flex items-center gap-6">
+					<button
+						onClick={toggleShuffle}
+						className={clsx(
+							'p-2 rounded-full hover:bg-white/10 transition',
+							isShuffled ? 'text-primary' : 'text-white/60'
+						)}
+					>
+						<Shuffle size={18} />
+					</button>
+					<button
+						onClick={prev}
+						className="p-2 rounded-full hover:bg-white/10 transition text-white"
+					>
+						<SkipBack size={24} fill="currentColor" />
+					</button>
+					<button
+						onClick={handlePlayPause}
+						className="p-3 bg-white text-black rounded-full hover:scale-105 transition shadow-lg shadow-white/20"
+					>
+						{isPlaying ? (
+							<Pause size={24} fill="currentColor" />
+						) : (
+							<Play size={24} fill="currentColor" className="ml-1" />
+						)}
+					</button>
+					<button
+						onClick={next}
+						className="p-2 rounded-full hover:bg-white/10 transition text-white"
+					>
+						<SkipForward size={24} fill="currentColor" />
+					</button>
+					<button
+						onClick={toggleRepeat}
+						className={clsx(
+							'p-2 rounded-full hover:bg-white/10 transition relative',
+							repeatMode !== 'none' ? 'text-primary' : 'text-white/60'
+						)}
+					>
+						<Repeat size={18} />
+						{repeatMode === 'one' && (
+							<span className="absolute top-2 right-2 text-[8px] font-bold">1</span>
+						)}
+					</button>
+				</div>
+
+				<div className="flex items-center w-full gap-3 text-xs text-white/60 font-mono">
+					<span className="w-10 text-right">{formatTime(progress)}</span>
+					<Slider.Root
+						className="relative flex items-center select-none touch-none w-full h-5 cursor-pointer group"
+						value={[progress]}
+						max={duration || 100}
+						step={1}
+						onValueChange={handleSeek}
+					>
+						<Slider.Track className="bg-white/10 relative grow rounded-full h-[4px] overflow-hidden group-hover:h-[6px] transition-all">
+							<Slider.Range className="absolute bg-white h-full" />
+						</Slider.Track>
+						<Slider.Thumb
+							className="block w-3 h-3 bg-white rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity focus:outline-none"
+							aria-label="Volume"
+						/>
+					</Slider.Root>
+					<span className="w-10">{formatTime(duration)}</span>
+				</div>
+			</div>
+
+			{/* Volume */}
+			<div className="flex items-center justify-end w-1/4 min-w-[150px] gap-3">
+				<button
+					onClick={() => setVolume(volume === 0 ? 1 : 0)}
+					className="text-white/60 hover:text-white"
+				>
+					{volume === 0 ? <VolumeX size={20} /> : <Volume2 size={20} />}
+				</button>
+				<Slider.Root
+					className="relative flex items-center select-none touch-none w-24 h-5 cursor-pointer group"
+					value={[volume]}
+					max={1}
+					step={0.01}
+					onValueChange={handleVolumeChange}
+				>
+					<Slider.Track className="bg-white/10 relative grow rounded-full h-[4px] overflow-hidden">
+						<Slider.Range className="absolute bg-white h-full" />
+					</Slider.Track>
+					<Slider.Thumb
+						className="block w-3 h-3 bg-white rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-opacity focus:outline-none"
+						aria-label="Volume"
+					/>
+				</Slider.Root>
+			</div>
+		</div>
+	);
+}
