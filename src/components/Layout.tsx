@@ -11,7 +11,7 @@ interface LayoutProps {
 
 export function Layout({ children, className, bottomBar }: LayoutProps) {
 	return (
-		<div className="flex h-screen w-full text-white">
+		<div className="flex h-screen w-full">
 			{/* Left Sidebar */}
 			<div className="w-64 shrink-0 glass border-r border-white/10">
 				<PlaylistSidebar />

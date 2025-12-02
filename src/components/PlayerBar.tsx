@@ -100,16 +100,16 @@ export function PlayerBar() {
 							)}
 						</div>
 						<div className="flex flex-col truncate">
-							<span className="font-medium text-white truncate">
+							<span className="font-medium truncate">
 								{currentTrack.metadata?.title || currentTrack.name}
 							</span>
-							<span className="text-sm text-white/60 truncate">
+							<span className="text-sm truncate">
 								{currentTrack.metadata?.artist || 'Unknown Artist'}
 							</span>
 						</div>
 					</>
 				) : (
-					<div className="text-white/40 text-sm">No track selected</div>
+					<div className="text-sm">No track selected</div>
 				)}
 			</div>
 

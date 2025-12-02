@@ -23,7 +23,7 @@ export function PlaylistSidebar() {
 					to="/"
 					className={({ isActive }) =>
 						`flex items-center gap-3 px-4 py-2 rounded-md text-sm font-semibold transition ${
-							isActive ? 'bg-white/10 text-white' : 'text-white/80 hover:bg-white/5'
+							isActive ? 'bg-white/10 ' : ' hover:bg-white/5'
 						}`
 					}
 				>
@@ -38,13 +38,13 @@ export function PlaylistSidebar() {
 			</nav>
 
 			<div className="flex items-center justify-between mt-4">
-				<div className="flex items-center gap-3 text-white/80">
+				<div className="flex items-center gap-3">
 					<ListMusic size={24} />
 					<h2 className="text-lg font-semibold">{t('playlists')}</h2>
 				</div>
 				<button
 					onClick={handleCreatePlaylist}
-					className="p-2 rounded-full text-white/60 hover:bg-white/10 hover:text-white transition"
+					className="p-2 rounded-full hover:bg-white/10 transition"
 				>
 					<Plus size={20} />
 				</button>
@@ -58,7 +58,7 @@ export function PlaylistSidebar() {
 							to={`/playlist/${playlist.id}`}
 							className={({ isActive }) =>
 								`px-4 py-2 rounded-md text-sm transition truncate ${
-									isActive ? 'bg-white/10 text-white' : 'text-white/80 hover:bg-white/5'
+									isActive ? 'bg-white/10' : 'hover:bg-white/5'
 								}`
 							}
 						>
@@ -66,7 +66,7 @@ export function PlaylistSidebar() {
 						</NavLink>
 					))
 				) : (
-					<p className="text-sm text-white/40 px-4 py-2">{t('newPlaylist')}</p>
+					<p className="text-sm px-4 py-2">{t('newPlaylist')}</p>
 				)}
 			</nav>
 		</div>

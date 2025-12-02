@@ -254,7 +254,7 @@ export function LibraryGrid() {
 							className={`px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 ${
 								viewMode === 'songs'
 									? 'bg-white text-black shadow-sm'
-									: 'text-white/60 hover:text-white'
+									: 'hover:text-white'
 							}`}
 						>
 							<LayoutGrid size={16} /> {t('allSongs')}
@@ -264,7 +264,7 @@ export function LibraryGrid() {
 							className={`px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 ${
 								viewMode === 'albums'
 									? 'bg-white text-black shadow-sm'
-									: 'text-white/60 hover:text-white'
+									: 'hover:text-white'
 							}`}
 						>
 							<Disc size={16} /> {t('albums')}
@@ -274,7 +274,7 @@ export function LibraryGrid() {
 							className={`px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 ${
 								viewMode === 'artists'
 									? 'bg-white text-black shadow-sm'
-									: 'text-white/60 hover:text-white'
+									: 'hover:text-white'
 							}`}
 						>
 							<Mic2 size={16} /> {t('artists')}

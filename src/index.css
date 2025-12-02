@@ -31,17 +31,19 @@
 }
 
 [data-theme='ink'] {
-	--bg-gradient: linear-gradient(to bottom, #e0e0e0, #f5f5f5);
-	/* Ink style often uses white background with black ink, but for dark mode app structure, 
-       we might invert or keep it dark. Let's try a dark ink style or a paper style. 
-       User asked for "Water & Ink", usually black/white. 
-       Let's go with a dark grey/black gradient for consistency with text color, 
-       OR we need to change text color too. 
-       Let's stick to dark themes for now to avoid breaking text contrast everywhere. */
-	--bg-gradient: linear-gradient(135deg, #000000 0%, #434343 100%);
+	/* Chinese Ink Wash Style (Shui Mo) */
+	--bg-gradient: linear-gradient(
+		135deg,
+		#e0e0e0 0%,
+		#575757 10%,
+		#e6e6e6 20%,
+		#f5f5f5 100%
+	);
 	--primary-color: #ffffff;
 	--glass-bg: rgba(255, 255, 255, 0.05);
 	--glass-border: rgba(255, 255, 255, 0.1);
+	/* Override global text color for light background */
+	color: #585858; /* Ink Black */
 }
 
 [data-theme='animated'] {
