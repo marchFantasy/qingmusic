@@ -1,6 +1,7 @@
 import React from 'react';
 import { twMerge } from 'tailwind-merge';
 import { PlaylistSidebar } from './PlaylistSidebar';
+import { LyricsView } from './LyricsView';
 
 interface LayoutProps {
 	children: React.ReactNode;
@@ -17,10 +18,15 @@ export function Layout({ children, className, bottomBar }: LayoutProps) {
 			</div>
 
 			<div className="flex flex-1 flex-col overflow-hidden">
-				{/* Main Content Area */}
-				<main className={twMerge('flex-1 overflow-hidden relative', className)}>
-					<div className="absolute inset-0 overflow-y-auto p-6">{children}</div>
-				</main>
+				<div className="flex flex-1 overflow-hidden">
+					{/* Main Content Area */}
+					<main className={twMerge('flex-1 overflow-hidden relative', className)}>
+						<div className="absolute inset-0 overflow-y-auto p-6">{children}</div>
+					</main>
+
+					{/* Right Sidebar (Lyrics) */}
+					<LyricsView />
+				</div>
 
 				{/* Bottom Player Bar Area */}
 				{bottomBar && (

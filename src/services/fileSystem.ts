@@ -44,7 +44,9 @@ export class FileSystemService {
 						let coverUrl: string | undefined = undefined;
 						if (common.picture?.length) {
 							const picture = common.picture[0];
-							const blob = new Blob([new Uint8Array(picture.data)], { type: picture.format });
+							const blob = new Blob([new Uint8Array(picture.data)], {
+								type: picture.format,
+							});
 							coverUrl = URL.createObjectURL(blob);
 						}
 
@@ -84,6 +86,31 @@ export class FileSystemService {
 
 	async getFile(fileHandle: FileSystemFileHandle): Promise<File> {
 		return await fileHandle.getFile();
+	}
+
+	async getFileByPath(
+		rootHandle: FileSystemDirectoryHandle,
+		path: string
+	): Promise<File | undefined> {
+		const parts = path.split('/');
+		const fileName = parts.pop();
+		if (!fileName) return undefined;
+
+		let currentHandle = rootHandle;
+		for (const part of parts) {
+			try {
+				currentHandle = await currentHandle.getDirectoryHandle(part);
+			} catch {
+				return undefined;
+			}
+		}
+
+		try {
+			const fileHandle = await currentHandle.getFileHandle(fileName);
+			return await fileHandle.getFile();
+		} catch {
+			return undefined;
+		}
 	}
 }
 
