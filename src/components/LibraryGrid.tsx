@@ -3,6 +3,7 @@ import { useLibraryStore } from '../store/useLibraryStore';
 import { usePlayerStore } from '../store/usePlayerStore';
 import { usePlaylistStore } from '../store/usePlaylistStore';
 import { useCoverArtStore } from '../store/useCoverArtStore';
+import { useLanguageStore } from '../store/useLanguageStore';
 import { fileSystem } from '../services/fileSystem';
 import {
 	FolderOpen,
@@ -37,6 +38,7 @@ export function LibraryGrid() {
 	const { play, pause, currentTrack, isPlaying } = usePlayerStore();
 	const { playlists, addTrackToPlaylist, createPlaylist } = usePlaylistStore();
 	const { coverUrls, loadCover, setCover } = useCoverArtStore();
+	const { t } = useLanguageStore();
 	const playlistArray = Object.values(playlists);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 	const activeFileRef = useRef<AudioFile | null>(null);
@@ -46,7 +48,7 @@ export function LibraryGrid() {
 	const [filterValue, setFilterValue] = useState<string | null>(null);
 
 	const handleCreatePlaylist = () => {
-		const name = prompt('Enter a name for your new playlist:');
+		const name = prompt(t('enterPlaylistName'));
 		if (name) {
 			createPlaylist(name);
 		}
@@ -114,13 +116,13 @@ export function LibraryGrid() {
 			if (album && !albumMap.has(album)) {
 				albumMap.set(album, {
 					name: album,
-					artist: file.metadata?.artist || 'Unknown Artist',
+					artist: file.metadata?.artist || t('unknownArtist'),
 					cover: file.metadata?.cover,
 				});
 			}
 		});
 		return Array.from(albumMap.values());
-	}, [files]);
+	}, [files, t]);
 
 	const artists = useMemo(() => {
 		const artistSet = new Set<string>();
@@ -194,16 +196,13 @@ export function LibraryGrid() {
 					<div className="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-6 text-primary">
 						<FolderOpen size={40} />
 					</div>
-					<h2 className="text-3xl font-bold mb-4 text-white">Select Music Folder</h2>
-					<p className="text-white/60 mb-8 max-w-md">
-						Choose a local directory to scan for music files. <br />
-						Your music never leaves your device.
-					</p>
+					<h2 className="text-3xl font-bold mb-4 text-white">{t('selectFolder')}</h2>
+					<p className="text-white/60 mb-8 max-w-md">{t('selectFolderDesc')}</p>
 					<button
 						onClick={handleOpenFolder}
 						className="px-8 py-3 bg-white text-black font-semibold rounded-full hover:scale-105 transition shadow-lg shadow-white/20"
 					>
-						Open Folder
+						{t('openFolder')}
 					</button>
 				</motion.div>
 			</div>
@@ -215,7 +214,7 @@ export function LibraryGrid() {
 			<div className="flex items-center justify-center h-full">
 				<div className="flex flex-col items-center gap-4">
 					<div className="w-10 h-10 border-4 border-white/20 border-t-white rounded-full animate-spin" />
-					<p className="text-white/60">Scanning library...</p>
+					<p className="text-white/60">{t('scanning')}</p>
 				</div>
 			</div>
 		);
@@ -258,7 +257,7 @@ export function LibraryGrid() {
 									: 'text-white/60 hover:text-white'
 							}`}
 						>
-							<LayoutGrid size={16} /> All Songs
+							<LayoutGrid size={16} /> {t('allSongs')}
 						</button>
 						<button
 							onClick={() => setViewMode('albums')}
@@ -268,7 +267,7 @@ export function LibraryGrid() {
 									: 'text-white/60 hover:text-white'
 							}`}
 						>
-							<Disc size={16} /> Albums
+							<Disc size={16} /> {t('albums')}
 						</button>
 						<button
 							onClick={() => setViewMode('artists')}
@@ -278,7 +277,7 @@ export function LibraryGrid() {
 									: 'text-white/60 hover:text-white'
 							}`}
 						>
-							<Mic2 size={16} /> Artists
+							<Mic2 size={16} /> {t('artists')}
 						</button>
 					</div>
 				)}
@@ -343,8 +342,10 @@ export function LibraryGrid() {
 				<>
 					{filteredFiles.length === 0 ? (
 						<div className="text-center text-white/60 mt-20">
-							<p className="text-lg">No results found for "{searchTerm}"</p>
-							<p className="text-sm">Try a different search term.</p>
+							<p className="text-lg">
+								{t('noResults')} "{searchTerm}"
+							</p>
+							<p className="text-sm">{t('tryDifferent')}</p>
 						</div>
 					) : (
 						<div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 pb-20">
@@ -435,7 +436,7 @@ export function LibraryGrid() {
 																}
 															}}
 														>
-															{file.metadata?.artist || 'Unknown Artist'}
+															{file.metadata?.artist || t('unknownArtist')}
 														</span>
 														{file.metadata?.album && (
 															<>
@@ -481,7 +482,7 @@ export function LibraryGrid() {
 													>
 														<DropdownMenu.Sub>
 															<DropdownMenu.SubTrigger className="px-3 py-2 flex justify-between items-center cursor-pointer hover:bg-white/10">
-																Add to playlist
+																{t('addToPlaylist')}
 															</DropdownMenu.SubTrigger>
 															<DropdownMenu.Portal>
 																<DropdownMenu.SubContent
@@ -502,7 +503,7 @@ export function LibraryGrid() {
 																		className="px-3 py-2 flex items-center gap-2 cursor-pointer hover:bg-white/10"
 																		onSelect={handleCreatePlaylist}
 																	>
-																		<Plus size={16} /> Create new playlist
+																		<Plus size={16} /> {t('createPlaylist')}
 																	</DropdownMenu.Item>
 																</DropdownMenu.SubContent>
 															</DropdownMenu.Portal>
@@ -513,7 +514,7 @@ export function LibraryGrid() {
 															onSelect={() => handleSetCover(file)}
 															disabled={!file.metadata?.album}
 														>
-															<ImageUp size={16} /> Set custom cover
+															<ImageUp size={16} /> {t('setCustomCover')}
 														</DropdownMenu.Item>
 													</DropdownMenu.Content>
 												</DropdownMenu.Portal>

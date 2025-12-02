@@ -5,13 +5,15 @@ import { PlayerBar } from './components/PlayerBar';
 import { LibraryGrid } from './components/LibraryGrid';
 import { useLibraryStore } from './store/useLibraryStore';
 import { useThemeStore } from './store/useThemeStore';
+import { useLanguageStore } from './store/useLanguageStore';
 import { Search } from 'lucide-react';
 import { PlaylistView } from './components/PlaylistView';
-import { ThemeSelector } from './components/ThemeSelector';
+import { SettingsModal } from './components/SettingsModal';
 
 function App() {
 	const { rootHandle, setSearchTerm, loadRootHandle } = useLibraryStore();
 	const { currentTheme } = useThemeStore();
+	const { t } = useLanguageStore();
 
 	useEffect(() => {
 		loadRootHandle();
@@ -28,7 +30,7 @@ function App() {
 					<header className="flex items-center justify-between mb-8 sticky top-0 z-10 py-4 glass-panel px-6 rounded-2xl mt-2">
 						<div className="flex items-center gap-6">
 							<h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-white/60">
-								Search
+								{t('library')}
 							</h1>
 							<div className="relative">
 								<Search
@@ -37,20 +39,14 @@ function App() {
 								/>
 								<input
 									type="text"
-									placeholder="Search by artist, album, song..."
+									placeholder={t('searchPlaceholder')}
 									className="bg-white/5 border border-transparent hover:border-white/10 focus:border-white/20 focus:bg-white/10 transition rounded-full pl-10 pr-4 py-2 text-sm w-72 focus:outline-none text-white"
 									onChange={(e) => setSearchTerm(e.target.value)}
 								/>
 							</div>
 						</div>
 						<div className="flex items-center gap-4">
-							<ThemeSelector />
-							<button
-								onClick={() => useLibraryStore.getState().scanLibrary()}
-								className="text-sm text-white/60 hover:text-white transition"
-							>
-								Rescan
-							</button>
+							<SettingsModal />
 						</div>
 					</header>
 				)}

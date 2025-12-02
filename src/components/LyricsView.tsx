@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef, useLayoutEffect } from 'react';
 import { usePlayerStore } from '../store/usePlayerStore';
 import { useLibraryStore } from '../store/useLibraryStore';
+import { useLanguageStore } from '../store/useLanguageStore';
 import { fileSystem } from '../services/fileSystem';
 import { parseLrc, type LyricLine } from '../utils/lyricsParser';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -8,6 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 export function LyricsView() {
 	const { currentTrack, progress } = usePlayerStore();
 	const { rootHandle } = useLibraryStore();
+	const { t } = useLanguageStore();
 	const [lyrics, setLyrics] = useState<LyricLine[]>([]);
 	const [activeIndex, setActiveIndex] = useState<number>(-1);
 	const scrollRef = useRef<HTMLDivElement>(null);
@@ -86,7 +88,7 @@ export function LyricsView() {
 	return (
 		<div className="h-full w-80 shrink-0 border-l border-white/10 bg-black/20 backdrop-blur-md flex flex-col">
 			<div className="p-6 border-b border-white/5">
-				<h3 className="text-lg font-bold text-white">Lyrics</h3>
+				<h3 className="text-lg font-bold text-white">{t('lyrics')}</h3>
 			</div>
 			<div
 				className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-hide"

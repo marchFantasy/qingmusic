@@ -1,12 +1,14 @@
 import { usePlaylistStore } from '../store/usePlaylistStore';
+import { useLanguageStore } from '../store/useLanguageStore';
 import { ListMusic, Plus, Library } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 
 export function PlaylistSidebar() {
 	const { playlists, createPlaylist } = usePlaylistStore();
+	const { t } = useLanguageStore();
 
 	const handleCreatePlaylist = () => {
-		const name = prompt('Enter a name for your new playlist:');
+		const name = prompt(t('enterPlaylistName'));
 		if (name) {
 			createPlaylist(name);
 		}
@@ -26,14 +28,14 @@ export function PlaylistSidebar() {
 					}
 				>
 					<Library size={20} />
-					轻音乐
+					{t('library')}
 				</NavLink>
 			</nav>
 
 			<div className="flex items-center justify-between mt-4">
 				<div className="flex items-center gap-3 text-white/80">
 					<ListMusic size={24} />
-					<h2 className="text-lg font-semibold">Playlists</h2>
+					<h2 className="text-lg font-semibold">{t('playlists')}</h2>
 				</div>
 				<button
 					onClick={handleCreatePlaylist}
@@ -59,7 +61,7 @@ export function PlaylistSidebar() {
 						</NavLink>
 					))
 				) : (
-					<p className="text-sm text-white/40 px-4 py-2">No playlists yet.</p>
+					<p className="text-sm text-white/40 px-4 py-2">{t('newPlaylist')}</p>
 				)}
 			</nav>
 		</div>
