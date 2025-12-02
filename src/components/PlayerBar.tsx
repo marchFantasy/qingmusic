@@ -120,14 +120,14 @@ export function PlayerBar() {
 						onClick={toggleShuffle}
 						className={clsx(
 							'p-2 rounded-full hover:bg-white/10 transition',
-							isShuffled ? 'text-primary' : 'text-white/60'
+							isShuffled ? 'text-primary' : ''
 						)}
 					>
 						<Shuffle size={18} />
 					</button>
 					<button
 						onClick={prev}
-						className="p-2 rounded-full hover:bg-white/10 transition text-white"
+						className="p-2 rounded-full hover:bg-white/10 transition"
 					>
 						<SkipBack size={24} fill="currentColor" />
 					</button>
@@ -143,7 +143,7 @@ export function PlayerBar() {
 					</button>
 					<button
 						onClick={next}
-						className="p-2 rounded-full hover:bg-white/10 transition text-white"
+						className="p-2 rounded-full hover:bg-white/10 transition"
 					>
 						<SkipForward size={24} fill="currentColor" />
 					</button>
@@ -151,12 +151,12 @@ export function PlayerBar() {
 						onClick={toggleRepeat}
 						className={clsx(
 							'p-2 rounded-full hover:bg-white/10 transition relative',
-							repeatMode !== 'none' ? 'text-primary' : 'text-white/60'
+							repeatMode !== 'none' ? 'text-primary' : ''
 						)}
 					>
 						<Repeat size={18} />
 						{repeatMode === 'one' && (
-							<span className="absolute top-2 right-2 text-[8px] font-bold">1</span>
+							<span className="absolute top-3 right-4 text-[8px] font-bold">1</span>
 						)}
 					</button>
 				</div>

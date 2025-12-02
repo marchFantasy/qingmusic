@@ -17,7 +17,7 @@
 
 	/* Default Theme (Atmospheric) */
 	--bg-gradient: linear-gradient(135deg, #1a1c2c 0%, #4a192c 50%, #1a1c2c 100%);
-	--primary-color: #22d3ee;
+	--primary-color: #fff;
 	--glass-bg: rgba(255, 255, 255, 0.1);
 	--glass-border: rgba(255, 255, 255, 0.1);
 }
@@ -39,7 +39,7 @@
 		#e6e6e6 20%,
 		#f5f5f5 100%
 	);
-	--primary-color: #ffffff;
+	--primary-color: #0c0c0c;
 	--glass-bg: rgba(255, 255, 255, 0.05);
 	--glass-border: rgba(255, 255, 255, 0.1);
 	/* Override global text color for light background */
@@ -48,7 +48,7 @@
 
 [data-theme='animated'] {
 	--bg-gradient: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-	--primary-color: #00ffcc;
+	--primary-color: #fff;
 }
 
 body {
@@ -107,7 +107,13 @@ body {
 		box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 	}
 	.glass-panel {
-		@apply bg-black/20 backdrop-blur-md border border-white/5;
+		background: rgba(0, 0, 0, 0.2);
+		backdrop-filter: blur(12px);
+		border: 1px solid rgba(255, 255, 255, 0.05);
+	}
+	/* 主题感知的主色文本 */
+	.text-primary {
+		color: var(--primary-color);
 	}
 }
 
