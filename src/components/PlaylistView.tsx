@@ -28,7 +28,7 @@ export function PlaylistView() {
 		.map((trackId) => files.find((f) => f.id === trackId))
 		.filter((t): t is NonNullable<typeof t> => t !== undefined);
 
-	const handlePlayTrack = (track: (typeof tracks)[0], index: number) => {
+	const handlePlayTrack = (track: (typeof tracks)[0]) => {
 		const isCurrent = currentTrack?.id === track.id;
 		if (isCurrent && isPlaying) {
 			pause();
@@ -98,7 +98,7 @@ export function PlaylistView() {
 									scale: 1.02,
 								}}
 								className="group rounded-lg cursor-pointer"
-								onClick={() => handlePlayTrack(track, index)}
+								onClick={() => handlePlayTrack(track)}
 							>
 								<td className="p-3 w-10">
 									<div className="relative w-4 h-4 flex items-center justify-center">
