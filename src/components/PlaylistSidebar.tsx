@@ -1,6 +1,6 @@
 import { usePlaylistStore } from '../store/usePlaylistStore';
 import { useLanguageStore } from '../store/useLanguageStore';
-import { ListMusic, Plus, Library } from 'lucide-react';
+import { ListMusic, Plus } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 
 export function PlaylistSidebar() {
@@ -27,7 +27,12 @@ export function PlaylistSidebar() {
 						}`
 					}
 				>
-					<Library size={20} />
+					{/* <Library size={20} /> */}
+					<img
+						src={`${import.meta.env.BASE_URL}logo-500-dark.png`}
+						className="w-8 h-8"
+						alt="Logo"
+					/>
 					{t('library')}
 				</NavLink>
 			</nav>
