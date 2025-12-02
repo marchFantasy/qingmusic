@@ -4,15 +4,22 @@ import { Layout } from './components/Layout';
 import { PlayerBar } from './components/PlayerBar';
 import { LibraryGrid } from './components/LibraryGrid';
 import { useLibraryStore } from './store/useLibraryStore';
+import { useThemeStore } from './store/useThemeStore';
 import { Search } from 'lucide-react';
 import { PlaylistView } from './components/PlaylistView';
+import { ThemeSelector } from './components/ThemeSelector';
 
 function App() {
 	const { rootHandle, setSearchTerm, loadRootHandle } = useLibraryStore();
+	const { currentTheme } = useThemeStore();
 
 	useEffect(() => {
 		loadRootHandle();
 	}, [loadRootHandle]);
+
+	useEffect(() => {
+		document.body.setAttribute('data-theme', currentTheme);
+	}, [currentTheme]);
 
 	return (
 		<Layout bottomBar={<PlayerBar />}>
@@ -36,12 +43,15 @@ function App() {
 								/>
 							</div>
 						</div>
-						<button
-							onClick={() => useLibraryStore.getState().scanLibrary()}
-							className="text-sm text-white/60 hover:text-white transition"
-						>
-							Rescan
-						</button>
+						<div className="flex items-center gap-4">
+							<ThemeSelector />
+							<button
+								onClick={() => useLibraryStore.getState().scanLibrary()}
+								className="text-sm text-white/60 hover:text-white transition"
+							>
+								Rescan
+							</button>
+						</div>
 					</header>
 				)}
 				<Routes>

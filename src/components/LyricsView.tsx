@@ -66,6 +66,7 @@ export function LyricsView() {
 		}
 
 		if (index !== activeIndex) {
+			// eslint-disable-next-line react-hooks/set-state-in-effect
 			setActiveIndex(index);
 			// Auto-scroll
 			if (scrollRef.current) {
