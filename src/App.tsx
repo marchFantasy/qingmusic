@@ -6,6 +6,7 @@ import { LibraryGrid } from './components/LibraryGrid';
 import { useLibraryStore } from './store/useLibraryStore';
 import { useThemeStore } from './store/useThemeStore';
 import { useLanguageStore } from './store/useLanguageStore';
+import { usePlayerStore } from './store/usePlayerStore';
 import { Search } from 'lucide-react';
 import { PlaylistView } from './components/PlaylistView';
 import { SettingsModal } from './components/SettingsModal';
@@ -14,6 +15,7 @@ function App() {
 	const { rootHandle, setSearchTerm, loadRootHandle } = useLibraryStore();
 	const { currentTheme } = useThemeStore();
 	const { t } = useLanguageStore();
+	const { currentTrack, isPlaying } = usePlayerStore();
 
 	useEffect(() => {
 		loadRootHandle();
@@ -22,6 +24,16 @@ function App() {
 	useEffect(() => {
 		document.body.setAttribute('data-theme', currentTheme);
 	}, [currentTheme]);
+
+	useEffect(() => {
+		if (currentTrack && isPlaying) {
+			const title = currentTrack.metadata?.title || currentTrack.name;
+			const artist = currentTrack.metadata?.artist || t('unknownArtist');
+			document.title = `${title} - ${artist}`;
+		} else {
+			document.title = 'QingMusic';
+		}
+	}, [currentTrack, isPlaying, t]);
 
 	return (
 		<Layout bottomBar={<PlayerBar />}>
