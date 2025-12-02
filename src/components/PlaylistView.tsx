@@ -35,8 +35,7 @@ export function PlaylistView() {
 		} else if (isCurrent && !isPlaying) {
 			play();
 		} else {
-			const playlistQueue = tracks.slice(index);
-			usePlayerStore.getState().setQueue(playlistQueue, track.id);
+			usePlayerStore.getState().setQueue(tracks, track.id);
 			play(track);
 		}
 	};
