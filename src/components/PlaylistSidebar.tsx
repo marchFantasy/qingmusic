@@ -26,7 +26,7 @@ export function PlaylistSidebar() {
 					}
 				>
 					<Library size={20} />
-					Qing Music
+					轻音乐
 				</NavLink>
 			</nav>
 
