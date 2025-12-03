@@ -62,12 +62,12 @@ export function PlaylistView() {
 				animate={{ opacity: 1, y: 0 }}
 				className="mb-8"
 			>
-				<h1 className="text-4xl font-bold text-white mb-2">{playlist.name}</h1>
-				<p className="text-white/60">{tracks.length} songs</p>
+				<h1 className="text-4xl font-bold mb-2">{playlist.name}</h1>
+				<p className="">{tracks.length} songs</p>
 			</motion.header>
 
 			<table className="w-full text-left text-sm">
-				<thead className="text-white/60 border-b border-white/10">
+				<thead className="border-b border-white/10">
 					<tr>
 						<th className="p-3 w-10">#</th>
 						<th className="p-3">Title</th>
@@ -114,12 +114,12 @@ export function PlaylistView() {
 											)
 										) : (
 											<>
-												<span className="text-white/60 group-hover:opacity-0 transition-opacity">
+												<span className="group-hover:opacity-0 transition-opacity">
 													{index + 1}
 												</span>
 												<Play
 													size={16}
-													className="absolute text-white/60 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+													className="absolute opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
 												/>
 											</>
 										)}
@@ -134,35 +134,33 @@ export function PlaylistView() {
 												className="w-full h-full object-cover"
 											/>
 										) : (
-											<div className="w-full h-full flex items-center justify-center text-white/20">
+											<div className="w-full h-full flex items-center justify-center">
 												<Music size={24} />
 											</div>
 										)}
 									</div>
 									<div>
 										<p
-											className={`font-medium truncate ${
-												isCurrent ? 'text-primary' : 'text-white'
-											}`}
+											className={`font-medium truncate ${isCurrent ? 'text-primary' : ''}`}
 										>
 											{track.metadata?.title || track.name}
 										</p>
-										<p className="text-white/60 truncate">
+										<p className="truncate">
 											{track.metadata?.artist || 'Unknown Artist'}
 										</p>
 									</div>
 								</td>
-								<td className="p-3 text-white/80 truncate">
+								<td className="p-3 truncate">
 									{track.metadata?.album || 'Unknown Album'}
 								</td>
-								<td className="p-3 text-white/60 font-mono">
+								<td className="p-3 font-mono">
 									{track.metadata?.duration
 										? formatTime(track.metadata.duration)
 										: '-:--'}
 								</td>
 								<td className="p-3">
 									<button
-										className="text-white/60 hover:text-red-500 opacity-0 group-hover:opacity-100 transition"
+										className="hover:text-red-500 opacity-0 group-hover:opacity-100 transition"
 										onClick={(e) => {
 											e.stopPropagation();
 											if (id) {
