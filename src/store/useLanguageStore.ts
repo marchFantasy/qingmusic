@@ -60,6 +60,8 @@ const translations: Translations = {
 
 		// Player
 		setCustomCover: 'Set custom cover',
+		coverArtBackground: 'Cover Art Background',
+		coverArtBackgroundDesc: 'Use playing song cover as background',
 	},
 	zh: {
 		// General
@@ -111,6 +113,8 @@ const translations: Translations = {
 
 		// Player
 		setCustomCover: '设置自定义封面',
+		coverArtBackground: '封面背景',
+		coverArtBackgroundDesc: '使用当前播放歌曲的封面作为背景',
 	},
 };
 

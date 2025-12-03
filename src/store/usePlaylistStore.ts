@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { v4 as uuidv4 } from 'uuid';
 
 export interface PlaylistItem {
 	id: string;
@@ -22,22 +21,22 @@ export const usePlaylistStore = create<PlaylistState>()(
 		(set) => ({
 			playlists: {},
 
-			createPlaylist: (name, trackIds = []) =>
+			createPlaylist: (name) =>
 				set((state) => {
-					const newId = uuidv4();
+					const id = crypto.randomUUID();
 					return {
 						playlists: {
 							...state.playlists,
-							[newId]: { id: newId, name, trackIds },
+							[id]: { id, name, trackIds: [], createdAt: Date.now() },
 						},
 					};
 				}),
 
-			deletePlaylist: (playlistId) =>
+			deletePlaylist: (id) =>
 				set((state) => {
-					const newPlaylists = { ...state.playlists };
-					delete newPlaylists[playlistId];
-					return { playlists: newPlaylists };
+					// eslint-disable-next-line @typescript-eslint/no-unused-vars
+					const { [id]: _deleted, ...rest } = state.playlists;
+					return { playlists: rest };
 				}),
 
 			renamePlaylist: (playlistId, newName) =>
@@ -69,7 +68,7 @@ export const usePlaylistStore = create<PlaylistState>()(
 						},
 					};
 				}),
-			
+
 			removeTrackFromPlaylist: (playlistId, trackId) =>
 				set((state) => {
 					if (!state.playlists[playlistId]) return state;

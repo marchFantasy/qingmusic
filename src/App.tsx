@@ -10,7 +10,36 @@ import { usePlayerStore } from './store/usePlayerStore';
 import { Search } from 'lucide-react';
 import { PlaylistView } from './components/PlaylistView';
 import { SettingsModal } from './components/SettingsModal';
+import { useCoverArtStore } from './store/useCoverArtStore';
+import type { AudioFile } from './types';
 
+function CoverArtBackground({
+	currentTrack,
+	coverUrls,
+}: {
+	currentTrack: AudioFile | null;
+	coverUrls: Record<string, string>;
+}) {
+	const albumName = currentTrack?.metadata?.album;
+	const coverUrl =
+		(albumName ? coverUrls[albumName] : undefined) ||
+		currentTrack?.metadata?.cover;
+
+	if (!coverUrl) return null;
+
+	return (
+		<div
+			className="fixed inset-0 z-0 pointer-events-none transition-opacity duration-1000"
+			style={{
+				backgroundImage: `url(${coverUrl})`,
+				backgroundSize: 'cover',
+				backgroundPosition: 'center',
+				filter: 'blur(30px) brightness(0.6)',
+				transform: 'scale(1.1)',
+			}}
+		/>
+	);
+}
 function App() {
 	const { rootHandle, setSearchTerm, loadRootHandle } = useLibraryStore();
 	const { currentTheme } = useThemeStore();
@@ -37,7 +66,15 @@ function App() {
 
 	return (
 		<Layout bottomBar={<PlayerBar />}>
-			<div className="max-w-7xl mx-auto">
+			{/* Cover Art Background Layer */}
+			{useThemeStore.getState().enableCoverArtBackground && (
+				<CoverArtBackground
+					currentTrack={currentTrack}
+					coverUrls={useCoverArtStore.getState().coverUrls}
+				/>
+			)}
+
+			<div className="max-w-7xl mx-auto relative z-1">
 				{rootHandle && (
 					<header className="flex items-center justify-between mb-8 sticky top-0 z-10 py-4 glass-panel px-6 rounded-2xl mt-2">
 						<div className="flex items-center gap-6">

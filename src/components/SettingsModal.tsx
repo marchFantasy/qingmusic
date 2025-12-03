@@ -12,7 +12,12 @@ import { fileSystem } from '../services/fileSystem';
 
 export function SettingsModal() {
 	const { t, currentLanguage, setLanguage } = useLanguageStore();
-	const { currentTheme, setTheme } = useThemeStore();
+	const {
+		currentTheme,
+		setTheme,
+		enableCoverArtBackground,
+		toggleCoverArtBackground,
+	} = useThemeStore();
 	const { rootHandle, setRootHandle, scanLibrary } = useLibraryStore();
 
 	const handleOpenFolder = async () => {
@@ -78,7 +83,7 @@ export function SettingsModal() {
 								{t('appearance')}
 							</h3>
 							<div className="space-y-4">
-								<div className="flex items-center justify-between mb-2">
+								<div className="flex items-center justify-between">
 									<span className="text-white/80">{t('theme')}</span>
 								</div>
 								<div className="grid grid-cols-2 gap-3">
@@ -97,6 +102,27 @@ export function SettingsModal() {
 											</button>
 										)
 									)}
+								</div>
+
+								<div className="flex items-center justify-between pt-2">
+									<div className="flex flex-col">
+										<span className="text-white/80">{t('coverArtBackground')}</span>
+										<span className="text-xs text-white/40">
+											{t('coverArtBackgroundDesc')}
+										</span>
+									</div>
+									<button
+										onClick={toggleCoverArtBackground}
+										className={`w-12 h-6 rounded-full transition-colors relative ${
+											enableCoverArtBackground ? 'bg-primary' : 'bg-white/10'
+										}`}
+									>
+										<span
+											className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform ${
+												enableCoverArtBackground ? 'translate-x-6' : 'translate-x-0'
+											}`}
+										/>
+									</button>
 								</div>
 							</div>
 						</section>

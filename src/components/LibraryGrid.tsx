@@ -477,7 +477,7 @@ export function LibraryGrid() {
 													<DropdownMenu.Content
 														align="start"
 														sideOffset={5}
-														className="bg-neutral-800/80 backdrop-blur-xl border border-white/10 rounded-lg shadow-2xl text-sm text-white/90 py-1 w-48"
+														className="z-50 bg-neutral-800/80 backdrop-blur-xl border border-white/10 rounded-lg shadow-2xl text-sm text-white/90 py-1 w-48"
 														onClick={(e) => e.stopPropagation()}
 													>
 														<DropdownMenu.Sub>
@@ -487,7 +487,7 @@ export function LibraryGrid() {
 															<DropdownMenu.Portal>
 																<DropdownMenu.SubContent
 																	sideOffset={5}
-																	className="bg-neutral-800/80 backdrop-blur-xl border border-white/10 rounded-lg shadow-2xl text-sm text-white/90 py-1 w-48"
+																	className="z-50 bg-neutral-800/80 backdrop-blur-xl border border-white/10 rounded-lg shadow-2xl text-sm text-white/90 py-1 w-48"
 																>
 																	{playlistArray.map((playlist) => (
 																		<DropdownMenu.Item

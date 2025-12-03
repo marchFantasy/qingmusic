@@ -1,11 +1,14 @@
 import { usePlaylistStore } from '../store/usePlaylistStore';
 import { useLanguageStore } from '../store/useLanguageStore';
-import { ListMusic, Plus } from 'lucide-react';
-import { NavLink } from 'react-router-dom';
+import { ListMusic, Plus, Trash2 } from 'lucide-react';
+import { NavLink, useNavigate, useLocation } from 'react-router-dom';
+import { clsx } from 'clsx';
 
 export function PlaylistSidebar() {
-	const { playlists, createPlaylist } = usePlaylistStore();
+	const { playlists, createPlaylist, deletePlaylist } = usePlaylistStore();
 	const { t } = useLanguageStore();
+	const navigate = useNavigate();
+	const location = useLocation();
 
 	const handleCreatePlaylist = () => {
 		const name = prompt(t('enterPlaylistName'));
@@ -53,17 +56,38 @@ export function PlaylistSidebar() {
 			<nav className="flex flex-col gap-1 overflow-y-auto flex-1">
 				{playlistArray.length > 0 ? (
 					playlistArray.map((playlist) => (
-						<NavLink
+						<div
 							key={playlist.id}
-							to={`/playlist/${playlist.id}`}
-							className={({ isActive }) =>
-								`px-4 py-2 rounded-md text-sm transition truncate ${
-									isActive ? 'bg-white/10' : 'hover:bg-white/5'
-								}`
-							}
+							className={clsx(
+								'group flex items-center justify-between px-4 py-2 rounded-md text-sm transition',
+								location.pathname === `/playlist/${playlist.id}`
+									? 'bg-white/10'
+									: 'hover:bg-white/5'
+							)}
 						>
-							{playlist.name}
-						</NavLink>
+							<NavLink to={`/playlist/${playlist.id}`} className="flex-1 truncate">
+								{playlist.name}
+							</NavLink>
+							<button
+								onClick={(e) => {
+									e.preventDefault();
+									if (
+										confirm(
+											t('deletePlaylistConfirm') || `Delete playlist "${playlist.name}"?`
+										)
+									) {
+										deletePlaylist(playlist.id);
+										if (location.pathname === `/playlist/${playlist.id}`) {
+											navigate('/');
+										}
+									}
+								}}
+								className="opacity-0 group-hover:opacity-100 p-1 hover:text-red-500 transition-opacity"
+								title={t('deletePlaylist') || 'Delete Playlist'}
+							>
+								<Trash2 size={14} />
+							</button>
+						</div>
 					))
 				) : (
 					<p className="text-sm px-4 py-2">{t('newPlaylist')}</p>
