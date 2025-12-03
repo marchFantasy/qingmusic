@@ -3,7 +3,7 @@ import type { AudioFile } from '../types';
 import { parseBlob } from 'music-metadata';
 
 // Supported audio extensions
-const AUDIO_EXTENSIONS = new Set(['mp3', 'flac', 'wav', 'ogg', 'm4a']);
+const AUDIO_EXTENSIONS = new Set(['mp3', 'flac', 'wav', 'ogg', 'm4a', 'aac']);
 
 export class FileSystemService {
 	async selectDirectory(): Promise<FileSystemDirectoryHandle> {

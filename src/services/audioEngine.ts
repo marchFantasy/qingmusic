@@ -32,7 +32,7 @@ class AudioEngine {
 		this.howl = new Howl({
 			src: [this.currentUrl],
 			html5: true, // Force HTML5 Audio to support large files and streaming
-			format: ['mp3', 'flac', 'wav', 'ogg', 'm4a'],
+			format: ['mp3', 'flac', 'wav', 'ogg', 'm4a', 'aac'],
 			volume: volume,
 			onend: onEnd,
 			onload: onLoad,
